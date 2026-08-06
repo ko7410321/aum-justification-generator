@@ -25,7 +25,28 @@
     }
     .container { max-width: 680px; margin: 0 auto; }
     h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
-    .subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 18px; }
+    .subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; }
+    .mode-switch {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .mode-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
     .card {
       background: var(--card);
       border-radius: 12px;
@@ -46,7 +67,7 @@
       color: var(--muted);
       margin-bottom: 4px;
     }
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 10px 12px;
       border: 1px solid var(--border);
@@ -125,6 +146,7 @@
       color: var(--muted);
       margin-top: 20px;
     }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -132,78 +154,153 @@
     <h1>AUM Justification Generator</h1>
     <p class="subtitle">輸入參數 → 自動計數 → 一鍵生成英文 draft</p>
 
-    <div class="card">
-      <div class="card-title">1. 客戶基本資料</div>
-      <div class="grid">
-        <div class="form-group">
-          <label>年齡 (Age)</label>
-          <input type="number" id="age" value="26" min="18" max="80" />
-        </div>
-        <div class="form-group">
-          <label>工作年資 (Working Years)</label>
-          <input type="number" id="years" value="8" min="1" max="40" />
-        </div>
-        <div class="form-group full">
-          <label>職位 (Job Title)</label>
-          <input type="text" id="job" value="clerk" />
-        </div>
-        <div class="form-group full">
-          <label>公司名稱 (Company)</label>
-          <input type="text" id="company" value="YA ZHOU INTERNATIONAL CO LTD" />
-        </div>
-        <div class="form-group full">
-          <label>業務性質 (Nature of Business)</label>
-          <input type="text" id="nature" value="investment service" />
-        </div>
-        <div class="form-group full">
-          <label>開戶目的 (Account Purpose)</label>
-          <input type="text" id="purpose" value="wealth accumulation and interest earnings" />
-        </div>
-      </div>
+    <div class="mode-switch">
+      <button class="mode-btn active" id="modeWorking" onclick="switchMode('working')">Working</button>
+      <button class="mode-btn" id="modeRetired" onclick="switchMode('retired')">Retired</button>
     </div>
 
-    <div class="card">
-      <div class="card-title">2. 收入 & 儲蓄參數</div>
-      <div class="grid">
-        <div class="form-group">
-          <label>現時月薪 (Monthly Salary HKD)</label>
-          <input type="number" id="monthly" value="45830" step="100" />
-        </div>
-        <div class="form-group">
-          <label>平均收入係現時收入嘅 %</label>
-          <input type="number" id="avgPercent" value="80" min="50" max="100" step="1" />
-        </div>
-        <div class="form-group full">
-          <label>儲蓄率 (Saving Rate %)</label>
-          <div class="rate-control">
-            <input type="range" id="savingRate" min="25" max="45" value="30" step="1" />
-            <span class="rate-value" id="rateDisplay">30%</span>
+    <!-- ========== WORKING MODE ========== -->
+    <div id="workingSection">
+      <div class="card">
+        <div class="card-title">1. 客戶基本資料</div>
+        <div class="grid">
+          <div class="form-group">
+            <label>年齡 (Age)</label>
+            <input type="number" id="age" value="26" min="18" max="80" />
           </div>
-          <div class="hint">香港一般參考 30–40%</div>
+          <div class="form-group">
+            <label>工作年資 (Working Years)</label>
+            <input type="number" id="years" value="8" min="1" max="40" />
+          </div>
+          <div class="form-group full">
+            <label>職位 (Job Title)</label>
+            <input type="text" id="job" value="clerk" />
+          </div>
+          <div class="form-group full">
+            <label>公司名稱 (Company)</label>
+            <input type="text" id="company" value="YA ZHOU INTERNATIONAL CO LTD" />
+          </div>
+          <div class="form-group full">
+            <label>業務性質 (Nature of Business)</label>
+            <input type="text" id="nature" value="investment service" />
+          </div>
+          <div class="form-group full">
+            <label>開戶目的 (Account Purpose)</label>
+            <input type="text" id="purpose" value="wealth accumulation and interest earnings" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">2. 收入 & 儲蓄參數</div>
+        <div class="grid">
+          <div class="form-group">
+            <label>現時月薪 (Monthly Salary HKD)</label>
+            <input type="number" id="monthly" value="45830" step="100" />
+          </div>
+          <div class="form-group">
+            <label>平均收入係現時收入嘅 %</label>
+            <input type="number" id="avgPercent" value="80" min="50" max="100" step="1" />
+          </div>
+          <div class="form-group full">
+            <label>儲蓄率 (Saving Rate %)</label>
+            <div class="rate-control">
+              <input type="range" id="savingRate" min="25" max="45" value="30" step="1" />
+              <span class="rate-value" id="rateDisplay">30%</span>
+            </div>
+            <div class="hint">香港一般參考 30–40%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">3. 自動計算結果</div>
+        <div class="calc-row">
+          <span class="calc-label">Current Annual Income</span>
+          <span id="calcAnnual">HKD 0</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Average Annual Income</span>
+          <span id="calcAvg">HKD 0</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Accumulate Wealth</span>
+          <span id="calcAccumulate">HKD 0</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Suggested AUM (90%)</span>
+          <span id="calcAum">HKD 0</span>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">3. 自動計算結果</div>
-      <div class="calc-row">
-        <span class="calc-label">Current Annual Income</span>
-        <span id="calcAnnual">HKD 0</span>
+    <!-- ========== RETIRED MODE ========== -->
+    <div id="retiredSection" class="hidden">
+      <div class="card">
+        <div class="card-title">1. 退休客戶資料</div>
+        <div class="grid">
+          <div class="form-group">
+            <label>年齡 (Age)</label>
+            <input type="number" id="r_age" value="63" min="50" max="90" />
+          </div>
+          <div class="form-group">
+            <label>已退休年數 (Years Retired)</label>
+            <input type="number" id="r_retiredYears" value="5" min="1" max="30" />
+          </div>
+          <div class="form-group full">
+            <label>退休前職位 (Previous Occupation)</label>
+            <input type="text" id="r_job" value="teacher in secondary school" />
+          </div>
+          <div class="form-group">
+            <label>退休前工作年資</label>
+            <input type="number" id="r_workYears" value="20" min="1" max="45" />
+          </div>
+          <div class="form-group">
+            <label>退休前平均年收入 (HKD)</label>
+            <input type="number" id="r_prevIncome" value="800000" step="10000" />
+          </div>
+        </div>
       </div>
-      <div class="calc-row">
-        <span class="calc-label">Average Annual Income</span>
-        <span id="calcAvg">HKD 0</span>
+
+      <div class="card">
+        <div class="card-title">2. TD 利息收入</div>
+        <div class="grid">
+          <div class="form-group">
+            <label>TD 年利息收入 (HKD/year)</label>
+            <input type="number" id="r_tdIncome" value="120000" step="1000" />
+          </div>
+          <div class="form-group">
+            <label>TD 平均年利率 (%)</label>
+            <input type="number" id="r_tdRate" value="2.5" min="0.5" max="6" step="0.1" />
+          </div>
+          <div class="form-group full">
+            <label>儲蓄率 (Saving Rate %)</label>
+            <div class="rate-control">
+              <input type="range" id="r_savingRate" min="25" max="45" value="30" step="1" />
+              <span class="rate-value" id="r_rateDisplay">30%</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="calc-row">
-        <span class="calc-label">Accumulate Wealth</span>
-        <span id="calcAccumulate">HKD 0</span>
-      </div>
-      <div class="calc-row">
-        <span class="calc-label">Suggested AUM (90%)</span>
-        <span id="calcAum">HKD 0</span>
+
+      <div class="card">
+        <div class="card-title">3. 自動計算結果</div>
+        <div class="calc-row">
+          <span class="calc-label">TD Interest Income</span>
+          <span id="r_calcTd">HKD 0</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Accumulate Wealth (TD ÷ Rate)</span>
+          <span id="r_calcAccumulate">HKD 0</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Suggested AUM</span>
+          <span id="r_calcAum">HKD 0</span>
+        </div>
       </div>
     </div>
 
+    <!-- Common final AUM -->
     <div class="card">
       <div class="card-title">4. 最終 AUM（可手動改）</div>
       <div class="form-group">
@@ -217,59 +314,107 @@
 
     <div class="card" style="margin-top: 14px;">
       <div class="card-title">5. 生成結果（可直接改）</div>
-      <textarea id="preview" class="preview-box" rows="13" spellcheck="false"></textarea>
+      <textarea id="preview" class="preview-box" rows="14" spellcheck="false"></textarea>
       <button class="btn btn-secondary" onclick="copyText()">複製全文</button>
       <div class="success-msg" id="copyMsg">已複製到剪貼簿 ✓</div>
     </div>
 
-    <div class="footer">AUM Justification Generator · 本地計算 · 資料唔會上傳</div>
+    <div class="footer">AUM Justification Generator · Working + Retired · 本地計算</div>
   </div>
 
   <script>
+    let currentMode = 'working';
+
+    function switchMode(mode) {
+      currentMode = mode;
+      document.getElementById('modeWorking').classList.toggle('active', mode === 'working');
+      document.getElementById('modeRetired').classList.toggle('active', mode === 'retired');
+      document.getElementById('workingSection').classList.toggle('hidden', mode !== 'working');
+      document.getElementById('retiredSection').classList.toggle('hidden', mode !== 'retired');
+      recalculate();
+      generateText();
+    }
+
     function formatHKD(num) {
       return "HKD " + Math.round(num).toLocaleString("en-US");
     }
 
     function recalculate() {
-      const monthly = Number(document.getElementById("monthly").value) || 0;
-      const years = Number(document.getElementById("years").value) || 0;
-      const avgPercent = Number(document.getElementById("avgPercent").value) || 80;
-      const rate = Number(document.getElementById("savingRate").value) || 30;
+      if (currentMode === 'working') {
+        const monthly = Number(document.getElementById("monthly").value) || 0;
+        const years = Number(document.getElementById("years").value) || 0;
+        const avgPercent = Number(document.getElementById("avgPercent").value) || 80;
+        const rate = Number(document.getElementById("savingRate").value) || 30;
 
-      document.getElementById("rateDisplay").textContent = rate + "%";
+        document.getElementById("rateDisplay").textContent = rate + "%";
 
-      const annual = monthly * 12;
-      const avg = annual * (avgPercent / 100);
-      const accumulate = avg * years * (rate / 100);
-      const suggestedAum = accumulate * 0.9;
+        const annual = monthly * 12;
+        const avg = annual * (avgPercent / 100);
+        const accumulate = avg * years * (rate / 100);
+        const suggestedAum = accumulate * 0.9;
 
-      document.getElementById("calcAnnual").textContent = formatHKD(annual);
-      document.getElementById("calcAvg").textContent = formatHKD(avg);
-      document.getElementById("calcAccumulate").textContent = formatHKD(accumulate);
-      document.getElementById("calcAum").textContent = formatHKD(suggestedAum);
+        document.getElementById("calcAnnual").textContent = formatHKD(annual);
+        document.getElementById("calcAvg").textContent = formatHKD(avg);
+        document.getElementById("calcAccumulate").textContent = formatHKD(accumulate);
+        document.getElementById("calcAum").textContent = formatHKD(suggestedAum);
 
-      document.getElementById("finalAum").value = Math.round(suggestedAum);
+        document.getElementById("finalAum").value = Math.round(suggestedAum);
+      } else {
+        // Retired mode
+        const tdIncome = Number(document.getElementById("r_tdIncome").value) || 0;
+        const tdRate = Number(document.getElementById("r_tdRate").value) || 2.5;
+        const rate = Number(document.getElementById("r_savingRate").value) || 30;
+
+        document.getElementById("r_rateDisplay").textContent = rate + "%";
+
+        const accumulate = tdIncome / (tdRate / 100);
+        const suggestedAum = Math.round(accumulate * 0.98); // slightly lower for realism
+
+        document.getElementById("r_calcTd").textContent = formatHKD(tdIncome);
+        document.getElementById("r_calcAccumulate").textContent = formatHKD(accumulate);
+        document.getElementById("r_calcAum").textContent = formatHKD(suggestedAum);
+
+        document.getElementById("finalAum").value = suggestedAum;
+      }
     }
 
     function generateText() {
-      const age = document.getElementById("age").value;
-      const years = document.getElementById("years").value;
-      const job = document.getElementById("job").value.trim() || "clerk";
-      const company = document.getElementById("company").value.trim() || "COMPANY NAME";
-      const nature = document.getElementById("nature").value.trim() || "investment service";
-      const purpose = document.getElementById("purpose").value.trim() || "wealth accumulation and interest earnings";
-      const monthly = Number(document.getElementById("monthly").value) || 0;
-      const avgPercent = Number(document.getElementById("avgPercent").value) || 80;
-      const rate = Number(document.getElementById("savingRate").value) || 30;
       const finalAum = Number(document.getElementById("finalAum").value) || 0;
-
-      const annual = monthly * 12;
-      const avg = annual * (avgPercent / 100);
-      const accumulate = avg * years * (rate / 100);
-
       const fmt = (n) => Math.round(n).toLocaleString("en-US");
 
-      const text = `**Age: ${age} AUM in HKD ${fmt(finalAum)}-**\n\nCustomer is currently working as a ${job} in ‘${company}’.\nNature of business is ${nature}.\n\nAccount mainly for ${purpose}.\n\nCurrent monthly salary HKD ${fmt(monthly)}-\n\nCurrent Annual income HKD ${fmt(annual)} (already included year-end bonus)\n\nAverage annual income for past ${years} years HKD ${fmt(avg)}-\n\nBased on saving rate in Hong Kong is ${rate}% and asset appreciation,\nit is plausible and reasonable for customer to accumulate wealth of HKD ${fmt(accumulate)}-`;
+      let text = '';
+
+      if (currentMode === 'working') {
+        const age = document.getElementById("age").value;
+        const years = document.getElementById("years").value;
+        const job = document.getElementById("job").value.trim() || "clerk";
+        const company = document.getElementById("company").value.trim() || "COMPANY NAME";
+        const nature = document.getElementById("nature").value.trim() || "investment service";
+        const purpose = document.getElementById("purpose").value.trim() || "wealth accumulation and interest earnings";
+        const monthly = Number(document.getElementById("monthly").value) || 0;
+        const avgPercent = Number(document.getElementById("avgPercent").value) || 80;
+        const rate = Number(document.getElementById("savingRate").value) || 30;
+
+        const annual = monthly * 12;
+        const avg = annual * (avgPercent / 100);
+        const accumulate = avg * years * (rate / 100);
+
+        text = `**Age: ${age} AUM in HKD ${fmt(finalAum)}-**\n\nCustomer is currently working as a ${job} in ‘${company}’.\nNature of business is ${nature}.\n\nAccount mainly for ${purpose}.\n\nCurrent monthly salary HKD ${fmt(monthly)}-\n\nCurrent Annual income HKD ${fmt(annual)} (already included year-end bonus)\n\nAverage annual income for past ${years} years HKD ${fmt(avg)}-\n\nBased on saving rate in Hong Kong is ${rate}% and asset appreciation,\nit is plausible and reasonable for customer to accumulate wealth of HKD ${fmt(accumulate)}-`;
+      } else {
+        // Retired text
+        const age = document.getElementById("r_age").value;
+        const retiredYears = document.getElementById("r_retiredYears").value;
+        const job = document.getElementById("r_job").value.trim() || "teacher in secondary school";
+        const workYears = document.getElementById("r_workYears").value;
+        const prevIncome = Number(document.getElementById("r_prevIncome").value) || 0;
+        const tdIncome = Number(document.getElementById("r_tdIncome").value) || 0;
+        const tdRate = Number(document.getElementById("r_tdRate").value) || 2.5;
+        const rate = Number(document.getElementById("r_savingRate").value) || 30;
+
+        const accumulate = tdIncome / (tdRate / 100);
+
+        text = `Age: ${age} AUM in HKD ${fmt(finalAum)}-\n\nCustomer already retired for ${retiredYears} yrs. After her retirement, her main income is TD interest. The TD interest rate is calculated based on an average annual rate of ${tdRate}%, his TD interest income HKD${fmt(tdIncome)}/year.\n\nBefore her retirement she worked as a ${job} for ${workYears} yrs.\nDuring this period, her average annual income was HKD${fmt(prevIncome)}\n\nBased on saving rate in Hong Kong is ${rate}% and asset appreciation,\nit is plausible and reasonable for customer to accumulate wealth of HKD ${fmt(accumulate)}-`;
+      }
 
       document.getElementById("preview").value = text;
     }
@@ -283,7 +428,6 @@
         msg.style.display = "block";
         setTimeout(() => { msg.style.display = "none"; }, 2000);
       }).catch(() => {
-        // fallback for older browsers
         document.execCommand("copy");
         const msg = document.getElementById("copyMsg");
         msg.style.display = "block";
@@ -291,7 +435,11 @@
       });
     }
 
+    // Bind events
     ["monthly", "years", "avgPercent", "savingRate"].forEach(id => {
+      document.getElementById(id).addEventListener("input", recalculate);
+    });
+    ["r_tdIncome", "r_tdRate", "r_savingRate", "r_prevIncome"].forEach(id => {
       document.getElementById(id).addEventListener("input", recalculate);
     });
 
