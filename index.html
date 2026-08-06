@@ -216,7 +216,7 @@
       <div class="card">
         <div class="card-title">3. 自動計算結果</div>
         <div class="calc-row">
-          <span class="calc-label">Current Annual Income</span>
+          <span class="calc-label">Current Annual Income (×13.5)</span>
           <span id="calcAnnual">HKD 0</span>
         </div>
         <div class="calc-row">
@@ -348,7 +348,7 @@
 
         document.getElementById("rateDisplay").textContent = rate + "%";
 
-        const annual = monthly * 12;
+        const annual = monthly * 13.5;
         const avg = annual * (avgPercent / 100);
         const accumulate = avg * years * (rate / 100);
         const suggestedAum = accumulate * 0.9;
@@ -368,7 +368,7 @@
         document.getElementById("r_rateDisplay").textContent = rate + "%";
 
         const accumulate = tdIncome / (tdRate / 100);
-        const suggestedAum = Math.round(accumulate * 0.98); // slightly lower for realism
+        const suggestedAum = Math.round(accumulate * 0.98);
 
         document.getElementById("r_calcTd").textContent = formatHKD(tdIncome);
         document.getElementById("r_calcAccumulate").textContent = formatHKD(accumulate);
@@ -395,7 +395,7 @@
         const avgPercent = Number(document.getElementById("avgPercent").value) || 80;
         const rate = Number(document.getElementById("savingRate").value) || 30;
 
-        const annual = monthly * 12;
+        const annual = monthly * 13.5;
         const avg = annual * (avgPercent / 100);
         const accumulate = avg * years * (rate / 100);
 
